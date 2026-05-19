@@ -1,0 +1,6 @@
+{
+  "stubPath": "./Micropython/stubs",
+  "reportMissingImports": false,
+  "venvPath": ".",
+}
+
