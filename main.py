@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+
 import time as Time
 import multiprocessing
 from pendulumDocs import PendulumDocs
@@ -111,6 +112,62 @@ class Integrators():
     def __init__(self, f: Callable[[float], float], dt=.1):
         self.f = f
         self.dt = dt
+        self.fig = None
+        self.ax = None
+    
+    def _plot_f(self, a: float, b: float):
+        """Adds self.f to plot"""
+        self._aplot(self.f, a, b, label="f(x)")
+    def _plot_int_f(self, a: float, b: float):
+        """Adds the integral of self.f to plot"""
+        self._aplot(lambda x: self.integrate(self.f, 0, x), a, b, label="Integral f(x)")
+    def plot(self):
+        self._plot_f(0, 5)
+        self._plot_int_f(0, 5)
+        # Now show it
+        self._show(title="Trig Comparison")
+    def _setup_plot(self):
+        """Initializes the figure and axis if they don't exist yet."""
+        if self.ax is None:
+            plt.style.use('seaborn-v0_8-muted')
+            self.fig, self.ax = plt.subplots(figsize=(10, 6), dpi=100)
+            
+            # Apply base styling once
+            self.ax.set_facecolor('#fdfdfd')
+            self.ax.grid(True, linestyle='--', alpha=0.6)
+            for spine in ['top', 'right']:
+                self.ax.spines[spine].set_visible(False)
+            self.ax.axhline(0, color='black', linewidth=0.8, alpha=.3)
+
+    def _aplot(self, f: Callable[[float], float], a: float, b: float, label: str = "f(x)"):
+        """Adds a new line to the existing plot."""
+        self._setup_plot()
+        
+        num_steps = int(np.ceil((abs(b - a)) / self.dt)) + 1
+        x = np.linspace(min(a, b), max(a, b), num_steps)
+        y = [f(val) for val in x]
+
+        # Draw the line
+        if self.ax: 
+            self.ax.plot(x, y, linewidth=2.5, label=label)
+        
+    def _show(self, title: str = "Function Visualization"):
+        """Finalizes and displays the plot."""
+        if self.ax is None:
+            print("Nothing to show!")
+            return
+
+        self.ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
+        self.ax.set_xlabel('x', fontsize=12)
+        self.ax.set_ylabel('y', fontsize=12)
+        self.ax.legend() # Automatically shows labels for all added lines
+        
+        plt.tight_layout()
+        plt.show()
+        
+        # Reset after showing so the next call starts a fresh plot
+        self.fig, self.ax = None, None
+    
     def plot_euler(self, f: Callable[[float], float], y0: float, a, b):
         """
         Graphs the full numerical solution using the Forward Euler method from t = a to t = b.
@@ -130,7 +187,7 @@ class Integrators():
         for n in range(num_steps):
             # Forward Euler formula: y_{n+1} = y_n + dt * f(t_n, y_n)
             # (If your f only takes y, change this to f(y_space[n]))
-            y_space[n+1] = self.forward_euler(y_space[n])
+            y_space[n+1] = y_space[n] + self.dt * f(y_space[n])
             
         # 4. Plotting the full trajectory
         plt.figure(figsize=(10, 6))
@@ -150,25 +207,26 @@ class Integrators():
         plt.grid(True, linestyle='--', alpha=0.6)
         plt.legend(loc='best')
         plt.show()
-    def integrate(self, a: float, b: float, method: Literal["Left", "Right", "Midpoint", "Trapezoid"]="Midpoint"):
+    
+    def integrate(self, f: Callable[[float], float],  a: float, b: float, method: Literal["Left", "Right", "Midpoint", "Trapezoid"]="Midpoint"):
         n: float = max(1, round((b - a) / self.dt))
         dx: float = (b - a) / n
 
         if method == "Left":
             # Sum of f(x) at the left endpoints
-            return sum(self.f(a + i * dx) for i in range(n)) * dx
+            return sum(f(a + i * dx) for i in range(n)) * dx
             
         elif method == "Right":
             # Sum of f(x) at the right endpoints
-            return sum(self.f(a + (i + 1) * dx) for i in range(n)) * dx
+            return sum(f(a + (i + 1) * dx) for i in range(n)) * dx
             
         elif method == "Midpoint":
             # Sum of f(x) at the midpoint of each subinterval
-            return sum(self.f(a + (i + 0.5) * dx) for i in range(n)) * dx
+            return sum(f(a + (i + 0.5) * dx) for i in range(n)) * dx
             
         elif method == "Trapezoid":
             # Area of a trapezoid: (f(x_left) + f(x_right)) / 2 * dx
-            return sum((self.f(a + i * dx) + self.f(a + (i + 1) * dx)) / 2 for i in range(n)) * dx
+            return sum((f(a + i * dx) + f(a + (i + 1) * dx)) / 2 for i in range(n)) * dx
             
         else:
             raise ValueError(f"Unknown integration method: {method}")
@@ -282,10 +340,9 @@ class Pendulum1(PendulumDocs):
 
 
 def test_func(x: float) -> float:
-        return -2*x
-integrator = Integrators(f=test_func, dt=0.5)
-# integrator.plot_euler(lambda x: np.e**(-2*x) , 1.0)
-integrator.plot_euler(lambda x: np.e**(-2*x), 0.0, 0, 5)
+        return math.sin(x)
+integrator = Integrators(f=test_func, dt=0.1)
+integrator.plot()
 # if __name__ == '__main__':
 #     # 1. Create your two pendulum instances
 #     pendulum = Pendulum(angle=math.pi/2, L=1, dt=0.05)
