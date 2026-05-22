@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-
+from scipy.optimize import brentq
 import time as Time
 import multiprocessing
 from pendulumDocs import PendulumDocs
@@ -109,23 +109,47 @@ class Pendulum(PendulumDocs):
 
 
 class Integrators():
+    """You can do math operations with a function
+    
+    Parameters
+    ----------
+    f: Callable[[float], float]
+        f takes in a real number and outputs a real number
+    dt: float
+        used to set precision, lower values preduce inaccurate but faster results
+    
+    Methods
+    -------
+    plot(b=10.0)
+        Plots attributes of f to a graph. Attributes include f, f', F, f^-1, f'^-1, F^-1
+    """
     def __init__(self, f: Callable[[float], float], dt=.1):
         self.f = f
         self.dt = dt
         self.fig = None
         self.ax = None
     
-    def _plot_f(self, a: float, b: float):
-        """Adds self.f to plot"""
+    def _plot_f(self, a: float, b: float) -> Callable[[float], float]:
+        """Adds self.f to plot
+
+        Returns
+        -------
+        Callable[[float], float
+            A the orginial function f(x)
+        """
         self._aplot(self.f, a, b, label="f(x)")
-    def _plot_int_f(self, a: float, b: float):
-        """Adds the integral of self.f to plot"""
-        self._aplot(lambda x: self.integrate(self.f, 0, x), a, b, label="Integral f(x)")
-    def plot(self):
-        self._plot_f(0, 5)
-        self._plot_int_f(0, 5)
-        # Now show it
-        self._show(title="Trig Comparison")
+        return self.f
+    def _plot_int_f(self, a: float, b: float) -> Callable[[float], float]:
+        """Adds the integral of self.f to plot using the default integration technique
+        
+        Returns
+        -------
+        Callable[[float], float]
+            A function F(b) which returns the integral of f from 0 to b
+        """
+        F = lambda x: self.integrate(self.f, 0, x)
+        self._aplot(F, a, b, label="Integral f(x)")
+        return F
     def _setup_plot(self):
         """Initializes the figure and axis if they don't exist yet."""
         if self.ax is None:
@@ -138,9 +162,8 @@ class Integrators():
             for spine in ['top', 'right']:
                 self.ax.spines[spine].set_visible(False)
             self.ax.axhline(0, color='black', linewidth=0.8, alpha=.3)
-
-    def _aplot(self, f: Callable[[float], float], a: float, b: float, label: str = "f(x)"):
-        """Adds a new line to the existing plot."""
+    def _aplot(self, f: Callable[[float], float], a: float, b: float, label: str = "f(x)", invert:bool=False):
+        """Adds a new function to self.ax plot."""
         self._setup_plot()
         
         num_steps = int(np.ceil((abs(b - a)) / self.dt)) + 1
@@ -148,9 +171,11 @@ class Integrators():
         y = [f(val) for val in x]
 
         # Draw the line
-        if self.ax: 
-            self.ax.plot(x, y, linewidth=2.5, label=label)
-        
+        if self.ax:
+            if invert:
+                self.ax.plot(y[:int(b/self.dt)], x[:int(b/self.dt)], linewidth=2.5, label=label)
+            else:
+                self.ax.plot(x, y, linewidth=2.5, label=label)
     def _show(self, title: str = "Function Visualization"):
         """Finalizes and displays the plot."""
         if self.ax is None:
@@ -168,45 +193,19 @@ class Integrators():
         # Reset after showing so the next call starts a fresh plot
         self.fig, self.ax = None, None
     
-    def plot_euler(self, f: Callable[[float], float], y0: float, a, b):
-        """
-        Graphs the full numerical solution using the Forward Euler method from t = a to t = b.
+    def plot(self, b: float):
+        self._plot_f(0, b)
+        f = self._plot_int_f(0, b)
+        self._aplot(self.f, 0, b, "f^-1(x)", True)
         
-        Note: Updated f to f(t, y) to support time-dependent ODEs, 
-        which is standard for autonomous/non-autonomous systems.
-        """
-        # 1. Clear the time steps based on interval and dt
-        num_steps = int(np.ceil((b - a) / self.dt))
+        self._show(title="f")
+    def plot_ode(self):
+        """Computes y' = f(y) and graphs the solution using numerical integration."""
+        b= 7
+        a=1
+        self._aplot(lambda x: self.integrate(lambda y: 1/self.f(y), a, x), 1, b, "y(t)")
         
-        # 2. Initialize arrays to store time (t) and solution (y) values
-        t_space = np.linspace(a, b, num_steps + 1)
-        y_space = np.zeros(num_steps + 1)
-        y_space[0] = y0
-        
-        # 3. Run the Forward Euler loop over the entire interval
-        for n in range(num_steps):
-            # Forward Euler formula: y_{n+1} = y_n + dt * f(t_n, y_n)
-            # (If your f only takes y, change this to f(y_space[n]))
-            y_space[n+1] = y_space[n] + self.dt * f(y_space[n])
-            
-        # 4. Plotting the full trajectory
-        plt.figure(figsize=(10, 6))
-        
-        # Plot the Euler approximation approximation
-        plt.plot(t_space, y_space, 'g-o', markersize=4, linewidth=2, label=f'Euler Approximation (dt={self.dt})')
-        
-        # Highlight initial and final states
-        plt.plot(t_space[0], y_space[0], 'ko', label=f'Initial State $y({a})={y0:.2f}$')
-        plt.plot(t_space[-1], y_space[-1], 'ro', label=f'Final State $y({b})={y_space[-1]:.2f}$')
-        
-        # Labels and formatting
-        plt.title(f"Forward Euler Method Solution from $t={a}$ to $t={b}$")
-        plt.xlabel("Time ($t$)")
-        plt.ylabel("Solution ($y$)")
-        plt.xlim(a, b)
-        plt.grid(True, linestyle='--', alpha=0.6)
-        plt.legend(loc='best')
-        plt.show()
+        self._show()
     
     def integrate(self, f: Callable[[float], float],  a: float, b: float, method: Literal["Left", "Right", "Midpoint", "Trapezoid"]="Midpoint"):
         n: float = max(1, round((b - a) / self.dt))
@@ -230,6 +229,7 @@ class Integrators():
             
         else:
             raise ValueError(f"Unknown integration method: {method}")
+    
     
     def forward_euler(self, y0: float) -> float:
         yn = y0 + self.f(y0) * self.dt
@@ -339,10 +339,8 @@ class Pendulum1(PendulumDocs):
                 pass
 
 
-def test_func(x: float) -> float:
-        return math.sin(x)
-integrator = Integrators(f=test_func, dt=0.1)
-integrator.plot()
+
+
 # if __name__ == '__main__':
 #     # 1. Create your two pendulum instances
 #     pendulum = Pendulum(angle=math.pi/2, L=1, dt=0.05)

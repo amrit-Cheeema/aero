@@ -8,7 +8,7 @@ class image:
     A class for handling images, opening, describing and saving them
     """
     def __init__(self):
-        im: ImageFile = None
+        im: ImageFile.ImageFile | None = None
         fileName: str = ""
         pass
     
@@ -27,7 +27,7 @@ class image:
         print(f"Image format: {self.im.format}\nImage Size (x,y)(px): {self.im.size}\nMode: {self.im.mode}")
         return self
     
-    def save(self, outFile) -> image:
+    def save(self, outFile) -> None:
         """Saves image to path given by outfile handeling conversions by using extension
             - ie (obj.save("out.png"))
         """
@@ -74,7 +74,7 @@ class LLM:
                 print(f" - {name}")
             return None
         client = ollama.AsyncClient()
-        res: ollama.ChatResponse = await client.chat(model=name, messages=[
+        res = await client.chat(model=name, messages=[
             {
                 'role': 'user',
                 'content': content,
