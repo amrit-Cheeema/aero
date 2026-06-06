@@ -1,0 +1,2 @@
+source /home/amrit/Documents/Code/engineering/projects/aero/Micropython/hardware/esp/helloworld/build/gdbinit/symbols
+source /home/amrit/Documents/Code/engineering/projects/aero/Micropython/hardware/esp/helloworld/build/gdbinit/connect

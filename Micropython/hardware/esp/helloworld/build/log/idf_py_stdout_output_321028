@@ -1,0 +1,70 @@
+Command: /home/amrit/.espressif/python_env/idf6.1_py3.14_env/bin/python /home/amrit/Documents/Code/engineering/projects/aero/Micropython/hardware/esp-idf/tools/idf_monitor.py -p /dev/ttyUSB0 -b 115200 --toolchain-prefix xtensa-esp32-elf- --target esp32 --revision 0 /home/amrit/Documents/Code/engineering/projects/aero/Micropython/hardware/esp/helloworld/build/helloworld.elf /home/amrit/Documents/Code/engineering/projects/aero/Micropython/hardware/esp/helloworld/build/bootloader/bootloader.elf -m '/home/amrit/.espressif/python_env/idf6.1_py3.14_env/bin/python' '/home/amrit/Documents/Code/engineering/projects/aero/Micropython/hardware/esp-idf/tools/idf.py'
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0040,len:6272
+load:0x40078000,len:15848
+load:0x40080400,len:3988
+entry 0x40080644
+[0;32mI (27) boot: ESP-IDF v6.1-dev-4182-g47faecc3e4-dirty 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Jun  3 2026 09:01:43[0m
+[0;32mI (28) boot: Multicore bootloader[0m
+[0;32mI (31) boot: chip revision: v3.0[0m
+[0;32mI (34) boot.esp32: SPI Speed      : 40MHz[0m
+[0;32mI (37) boot.esp32: SPI Mode       : DIO[0m
+[0;32mI (41) boot.esp32: SPI Flash Size : 2MB[0m
+[0;32mI (45) boot: Enabling RNG early entropy source...[0m
+[0;32mI (49) boot: Partition Table:[0m
+[0;32mI (52) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (58) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (65) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (71) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (78) boot: End of partition table[0m
+[0;32mI (81) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=1d804h (120836) map[0m
+[0;32mI (131) esp_image: segment 1: paddr=0002d82c vaddr=3ffbdb60 size=027ech ( 10220) load[0m
+[0;32mI (136) esp_image: segment 2: paddr=00030020 vaddr=400d0020 size=63e74h (409204) map[0m
+[0;32mI (282) esp_image: segment 3: paddr=00093e9c vaddr=3ffc034c size=02758h ( 10072) load[0m
+[0;32mI (286) esp_image: segment 4: paddr=000965fc vaddr=40080000 size=15a54h ( 88660) load[0m
+[0;32mI (322) esp_image: segment 5: paddr=000ac058 vaddr=50000000 size=00028h (    40) load[0m
+[0;32mI (334) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (334) boot: Disabling RNG early entropy source...[0m
+[0;32mI (344) cpu_start: Multicore app[0m
+[0;32mI (352) cpu_start: GPIO 3 and 1 are used as console UART I/O pins[0m
+[0;32mI (353) cpu_start: Pro cpu start user code[0m
+[0;32mI (353) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (355) app_init: Application information:[0m
+[0;32mI (358) app_init: Project name:     helloworld[0m
+[0;32mI (362) app_init: App version:      b1f5878a-dirty[0m
+[0;32mI (367) app_init: Compile time:     Jun  3 2026 09:25:40[0m
+[0;32mI (372) app_init: ELF file SHA256:  f146dda11...[0m
+[0;32mI (376) app_init: ESP-IDF:          v6.1-dev-4182-g47faecc3e4-dirty[0m
+[0;32mI (382) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (386) efuse_init: Max chip rev:     v3.99 [0m
+[0;32mI (390) efuse_init: Chip rev:         v3.0[0m
+[0;32mI (394) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (400) heap_init: At 3FFAFF10 len 000000F0 (0 KiB): DRAM[0m
+[0;32mI (405) heap_init: At 3FFB6388 len 00001C78 (7 KiB): DRAM[0m
+[0;32mI (410) heap_init: At 3FFB9A20 len 00004108 (16 KiB): DRAM[0m
+[0;32mI (416) heap_init: At 3FFC6D70 len 00019290 (100 KiB): DRAM[0m
+[0;32mI (421) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (426) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (432) heap_init: At 40095A54 len 0000A5AC (41 KiB): IRAM[0m
+[0;32mI (439) spi_flash: detected chip: generic[0m
+[0;32mI (441) spi_flash: flash io: dio[0m
+[0;33mW (444) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (457) coexist: coex firmware version: b00e8cb[0m
+[0;32mI (461) main_task: Started on CPU0[0m
+[0;32mI (471) main_task: Calling app_main()[0m
+[0;32mI (481) BTDM_INIT: BT controller compile version [003f89d][0m
+[0;32mI (481) BTDM_INIT: Using main XTAL as clock source[0m
+[0;32mI (481) BTDM_INIT: Bluetooth MAC: b4:8a:0a:2e:df:3e[0m
+[0;32mI (491) phy_init: phy_version 4863,a3a4459,Oct 28 2025,14:30:06[0m
+[0;32mI (881) CONN_DEMO: GATT server register, status 0, app_id 0[0m
+[0;32mI (881) main_task: Returned from app_main()[0m
+[0;32mI (881) CONN_DEMO: Advertising data set, status 0[0m
+[0;32mI (901) CONN_DEMO: Advertising start successfully[0m
+[0;32mI (64851) CONN_DEMO: Connected, conn_id 0, remote 75:06:fa:b2:02:cf[0m
+[0;32mI (65801) CONN_DEMO: Connection params update, status 0, conn_int 30, latency 0, timeout 400[0m

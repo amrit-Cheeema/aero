@@ -1,0 +1,6 @@
+-Wno-frame-address
+-mlongcalls
+-fno-builtin-memcpy
+-fno-builtin-memset
+-fno-builtin-bzero
+"-specs=/home/amrit/Documents/Code/engineering/projects/aero/Micropython/hardware/esp/helloworld/build/specs/picolibc.specs"
